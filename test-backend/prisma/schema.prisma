@@ -1,0 +1,55 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum DiscountType {
+  DIRECT
+  PERCENTAGE
+}
+
+model Product {
+  id            Int            @id @default(autoincrement())
+  name          String         @db.VarChar(255)
+  basePrice     Float
+  activeOffers  OfferProduct[]
+  
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@map("products")
+}
+
+model Offer {
+  id            Int            @id @default(autoincrement())
+  name          String         @db.VarChar(255)
+  startDate     DateTime
+  endDate       DateTime
+  discountType  DiscountType
+  discountValue Float
+  products      OfferProduct[]
+  
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@map("offers")
+}
+
+// Tabla intermedia para manejar qué productos están en qué oferta
+model OfferProduct {
+  id        Int     @id @default(autoincrement())
+  offerId   Int     @db.Integer
+  productId Int     @db.Integer
+
+  offer     Offer   @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([offerId, productId])
+  @@map("offer_products")
+}

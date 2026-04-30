@@ -1,0 +1,43 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: kodigo_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ton618
+      POSTGRES_DB: test_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # 1. Le decimos a Docker que verifique constantemente si Postgres ya despertó
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d test_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: 
+      context: ./test-backend
+    container_name: kodigo_backend
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://postgres:ton618@db:5432/test_db?schema=public"
+    depends_on:
+      db:
+        # 2. El backend ahora esperará a que el healthcheck de la BD sea exitoso
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./test-frontend
+    container_name: kodigo_frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

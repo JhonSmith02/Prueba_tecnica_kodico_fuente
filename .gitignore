@@ -1,0 +1,19 @@
+# Dependencias
+node_modules/
+/test-backend/node_modules/
+/test-frontend/node_modules/
+
+# Entornos y variables
+.env
+.env.*
+
+# Archivos de sistema operativo (Crucial para Mac)
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Compilados
+dist/
+build/
