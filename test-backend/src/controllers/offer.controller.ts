@@ -23,7 +23,7 @@ export const createOffer = async (req: Request, res: Response) => {
     });
 
     res.status(201).json({ message: 'Separata creada con éxito', data: newOffer });
-  } catch (_error) {
+  } catch {
     res.status(500).json({ error: 'Error al crear la separata' });
   }
 };
