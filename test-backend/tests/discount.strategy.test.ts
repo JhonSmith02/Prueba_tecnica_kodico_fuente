@@ -27,7 +27,7 @@ describe('Discount Strategy Pattern', () => {
 
   it('La fábrica debe lanzar error si el tipo no existe', () => {
     expect(() => {
-      // @ts-expect-error
+    // @ts-expect-error: Forzando un tipo invalido para el test
       DiscountFactory.getStrategy('INVALID');
     }).toThrow('Tipo de descuento no soportado: INVALID');
   });

@@ -17,7 +17,7 @@ app.get('/api/health', async (req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
     res.json({ status: 'ok', message: 'Servidor y BD funcionando' });
-  } catch (error) {
+  } catch {
     res.status(500).json({ status: 'error', message: 'Error en BD' });
   }
 });
