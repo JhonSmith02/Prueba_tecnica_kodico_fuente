@@ -57,11 +57,13 @@ jobs:
         with:
           context: ./test-backend
           push: true
-          tags: ghcr.io/${{ github.repository }}/kodigo-backend:latest
+          # Rutas en minúsculas estrictamente para Docker
+          tags: ghcr.io/jhonsmith02/prueba_tecnica_kodico_fuente/kodigo-backend:latest
 
       - name: Construir y publicar imagen Frontend
         uses: docker/build-push-action@v5
         with:
           context: ./test-frontend
           push: true
-          tags: ghcr.io/${{ github.repository }}/kodigo-frontend:latest
+          # Rutas en minúsculas estrictamente para Docker
+          tags: ghcr.io/jhonsmith02/prueba_tecnica_kodico_fuente/kodigo-frontend:latest
