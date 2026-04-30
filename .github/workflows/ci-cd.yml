@@ -1,0 +1,67 @@
+name: CI/CD Pipeline Kódigo Fuente
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  code-quality-and-tests:
+    name: Linter & Unit Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Validaciones del Backend
+      - name: Instalar dependencias Backend
+        working-directory: ./test-backend
+        run: npm ci
+
+      - name: Ejecutar Linter (Backend)
+        working-directory: ./test-backend
+        run: npm run lint
+
+      - name: Ejecutar Tests Unitarios (Strategy Pattern)
+        working-directory: ./test-backend
+        run: npm run test
+
+  build-and-publish-images:
+    name: Construir y Publicar Imágenes Docker
+    needs: code-quality-and-tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Iniciar sesión en GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Construir y publicar imagen Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./test-backend
+          push: true
+          tags: ghcr.io/${{ github.repository }}/kodigo-backend:latest
+
+      - name: Construir y publicar imagen Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./test-frontend
+          push: true
+          tags: ghcr.io/${{ github.repository }}/kodigo-frontend:latest
